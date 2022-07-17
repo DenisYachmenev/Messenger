@@ -2,34 +2,42 @@
 {
     public void Register( WebApplication app )
     {
-        app.MapGet( "/user", async ( IUserRepository repository ) =>
-            Results.Ok( await repository.ReadAsync() )
+        app.MapGet( "/user", async ( MessageDb context ) =>
+            Results.Ok( await context.Users.ToArrayAsync() )
         );
 
-        app.MapGet( "/user/{id}", async ( Guid id, IUserRepository repository ) =>
-            Results.Ok( await repository.GetAsync( id ) )
+        app.MapGet( "/user/name/{name}/email/{email}", async ( string name, string email,  MessageDb context ) =>
+            await context.Users.Include( u => u.Chats/*.Select(c => c.Id )*/ ).FirstOrDefaultAsync( u => u.Name == name && u.Email == email ) is User user
+            ? Results.Ok( user )
+            : Results.NotFound( )
         );
 
-        app.MapPost( "/user", async ( [FromBody] User body, IUserRepository repository ) =>
+        app.MapPost( "/user", async ( [FromBody] User body, MessageDb context ) =>
         {
-            var user = await repository.CreateAsync( body );
+            var user = await context.Users.AddAsync( body );
 
-            await repository.SaveAsync();
+            await context.SaveChangesAsync();
 
-            return Results.Created( $"/user/{user.Id}", user );
+            return Results.Created( $"/user/{user.Entity.Id}", user.Entity );
         } );
 
-        app.MapDelete( "/user/{id}", async ( Guid id, IUserRepository repository ) =>
-        {
-            var user = await repository.GetAsync( id );
+        //app.MapGet( "/user/{id}", async ( Guid id, MessageDb context ) =>
+        //    await context.Users.Include( u => u.Chats ).FirstOrDefaultAsync( u => u.Id == id ) is User user
+        //    ? Results.Ok( user )
+        //    : Results.NotFound( id )
+        //);
 
-            if( user == null )
-                return Results.NotFound( id );
+        //app.MapDelete( "/user/{id}", async ( Guid id, MessageDb context ) =>
+        //{
+        //    var user = await context.Users.FirstOrDefaultAsync( u => u.Id == id );
 
-            await repository.DeletetAsync( user.Id );
-            await repository.SaveAsync();
+        //    if( user == null )
+        //        return Results.NotFound( id );
 
-            return Results.NoContent();
-        } );
+        //    context.Users.Remove( user );
+        //    await context.SaveChangesAsync();
+
+        //    return Results.NoContent();
+        //} );
     }
 }

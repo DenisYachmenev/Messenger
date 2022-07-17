@@ -2,46 +2,53 @@
 {
     public void Register( WebApplication app )
     {
-        app.MapGet( "/message/{id}", async ( Guid id, IMessageRepository repository ) =>
-            Results.Ok( await repository.GetAsync( id ) )
-        );
+        app.MapGet( "/message/chatId/{chatId}", async ( Guid chatId, MessageDb context ) => {
+            var messages = await context.Messages.Where( m => m.ChatId == chatId ).ToArrayAsync();
 
-        app.MapPost( "/message", async ( [FromBody] Message body, IMessageRepository repository ) =>
-        {
-            var message = await repository.CreateAsync( body );
-
-            await repository.SaveAsync();
-
-            return Results.Created( $"/message/{message.Id}", message );
+            return Results.Ok( messages );
         } );
 
-        app.MapPut( "/message", async ( [FromBody] Message body, IMessageRepository repository ) =>
+        app.MapPost( "/message", async ( [FromBody] Message body, MessageDb context ) =>
         {
-            var message = await repository.GetAsync( body.Id );
+            var message = await context.Messages.AddAsync( body );
 
-            if( message == null )
-                return Results.NotFound( body.Id );
+            await context.SaveChangesAsync();
 
-            message.Text = body.Text;
-            message.Status = body.Status;
-            
-            await repository.SaveAsync();
-
-            // Тут наверное какоей-то другой стутус надо возвращать
-            return Results.Ok( message );
+            return Results.Created( $"/message/{message.Entity.Id}", message.Entity );
         } );
 
-        app.MapDelete( "/message/{id}", async ( Guid id, IMessageRepository repository ) =>
-        {
-            var message = await repository.GetAsync( id );
+          //app.MapGet( "/message/{id}", async ( Guid id, MessageDb context ) =>
 
-            if( message == null )
-                return Results.NotFound( id );
+          //    await context.Messages.FirstOrDefaultAsync( m => m.Id == id ) is Message message
+          //    ? Results.Ok( message )
+          //    : Results.NotFound( id ) 
+          //);
 
-            await repository.DeletetAsync( message.Id );
-            await repository.SaveAsync();
+          //app.MapPut( "/message", async ( [FromBody] Message body, MessageDb context ) =>
+          //{
+          //    var message = await context.Messages.FirstOrDefaultAsync( m => m.Id == body.Id );
 
-            return Results.NoContent();
-        } );
+          //    if( message == null )
+          //        return Results.NotFound( body.Id );
+
+          //    message.Status = body.Status;
+
+          //    await context.SaveChangesAsync();
+
+          //    return Results.NoContent();
+          //} );
+
+          //app.MapDelete( "/message/{id}", async ( Guid id, MessageDb context ) =>
+          //{
+          //    var message = await context.Messages.FirstOrDefaultAsync( m => m.Id == id );
+
+          //    if( message == null )
+          //        return Results.NotFound( id );
+
+          //    context.Messages.Remove( message );
+          //    await context.SaveChangesAsync();
+
+          //    return Results.NoContent();
+          //} );
     }
 }
