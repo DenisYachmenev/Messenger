@@ -10,12 +10,12 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 
     public async Task<IReadOnlyCollection<Message>> ReadByChatIdAsync( Guid chatId )
     {
-        return await _context.Messages.Where( m => m.ChatId == chatId ).ToListAsync();
+        return await _context.Messages.Where( m => m.ChatId == chatId ).ToArrayAsync();
     }
 
     public async Task<IReadOnlyCollection<Message>> ReadByUserIdAsync( Guid userId )
     {
-        return await _context.Messages.Where( m => m.UserId == userId ).ToListAsync();
+        return await _context.Messages.Where( m => m.UserId == userId ).ToArrayAsync();
     }
 
     public override async Task<Message> CreateAsync( Message entity )

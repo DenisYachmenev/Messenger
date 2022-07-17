@@ -1,7 +1,7 @@
-public enum Status
+public enum Status : int
 {
-    New,
-    Sent,
-    Read
+    New = 0,
+    Sent = 1,
+    Read = 2
 }
 

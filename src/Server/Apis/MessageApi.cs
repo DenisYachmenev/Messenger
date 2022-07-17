@@ -1,31 +1,47 @@
-public class MessageApi
+﻿public class MessageApi
 {
-    public void Register(WebApplication app)
+    public void Register( WebApplication app )
     {
-        app.MapPost("/get", async ( Guid id, IMessageRepository repository) =>
-            Results.Ok(await repository.GetAsync( id ) )
+        app.MapGet( "/message/{id}", async ( Guid id, IMessageRepository repository ) =>
+            Results.Ok( await repository.GetAsync( id ) )
         );
 
-        app.MapPost("/add", async ([FromBody] Message body, IMessageRepository repository ) =>
+        app.MapPost( "/message", async ( [FromBody] Message body, IMessageRepository repository ) =>
         {
             var message = await repository.CreateAsync( body );
 
             await repository.SaveAsync();
 
             return Results.Created( $"/message/{message.Id}", message );
-        });
+        } );
 
-        app.MapPost("/delete", async (Guid id, IMessageRepository repository ) =>
+        app.MapPut( "/message", async ( [FromBody] Message body, IMessageRepository repository ) =>
         {
-            var message = (await repository.GetAsync( id ));
+            var message = await repository.GetAsync( body.Id );
 
-            if ( message == null)
-                return Results.NoContent();
+            if( message == null )
+                return Results.NotFound( body.Id );
 
-            await repository.DeletetAsync(message.Id);
+            message.Text = body.Text;
+            message.Status = body.Status;
+            
+            await repository.SaveAsync();
+
+            // Тут наверное какоей-то другой стутус надо возвращать
+            return Results.Ok( message );
+        } );
+
+        app.MapDelete( "/message/{id}", async ( Guid id, IMessageRepository repository ) =>
+        {
+            var message = await repository.GetAsync( id );
+
+            if( message == null )
+                return Results.NotFound( id );
+
+            await repository.DeletetAsync( message.Id );
             await repository.SaveAsync();
 
             return Results.NoContent();
-        });
+        } );
     }
 }

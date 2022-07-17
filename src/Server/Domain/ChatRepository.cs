@@ -19,12 +19,15 @@
 
     public override async Task<Chat> GetAsync( Guid id )
     {
-        return await _context.Chats.SingleOrDefaultAsync( c => c.Id == id );
+        return await _context.Chats
+            .Include( c => c.Messages.OrderByDescending(m => m.DateTime).Take(5) )
+            .Include( c => c.Users)
+            .SingleOrDefaultAsync( c => c.Id == id );
     }
 
-    public async Task<IReadOnlyCollection<Chat>> ReadAsync( Guid userId )
+    public async Task<IReadOnlyCollection<Chat>> ReadAsync( )
     {
-        throw new NotImplementedException();
+        return await _context.Chats.ToArrayAsync();
         //return await _context.Chats.Where( c => c.Users == userId ).ToListAsync();
     }
 }
