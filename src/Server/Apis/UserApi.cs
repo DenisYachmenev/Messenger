@@ -6,11 +6,17 @@
             Results.Ok( await context.Users.ToArrayAsync() )
         );
 
-        app.MapGet( "/user/name/{name}/email/{email}", async ( string name, string email,  MessageDb context ) =>
-            await context.Users.Include( u => u.Chats/*.Select(c => c.Id )*/ ).FirstOrDefaultAsync( u => u.Name == name && u.Email == email ) is User user
-            ? Results.Ok( user )
-            : Results.NotFound( )
-        );
+        _ = app.MapGet( "/user/name/{name}/email/{email}", async ( string name, string email, MessageDb context ) =>
+        {
+            var user = await context.Users
+                .Where( u => u.Name == name && u.Email == email )
+                .Select( u => new { id = u.Id, name = u.Name, chats = u.Chats.Select(c => c.Id).ToArray() } )
+                .FirstOrDefaultAsync();
+
+            return user == null
+                ? Results.NotFound()
+                : Results.Ok( user );
+        } );
 
         app.MapPost( "/user", async ( [FromBody] User body, MessageDb context ) =>
         {

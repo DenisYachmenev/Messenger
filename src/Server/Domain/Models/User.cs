@@ -8,5 +8,5 @@ public class User
     [Required, MaxLength( 50 )]
     public string Email { get; set; } = string.Empty;
 
-    public virtual ICollection<Chat> Chats { get; set; } = new HashSet<Chat>();
+    public ICollection<Chat> Chats { get; set; } = new HashSet<Chat>();
 }

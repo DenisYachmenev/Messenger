@@ -2,15 +2,21 @@
 {
     public void Register( WebApplication app )
     {
-        app.MapGet( "/chat", async ( Guid userId, MessageDb context ) =>
+        app.MapGet( "/chat", async ( MessageDb context ) =>
             Results.Ok( await context.Chats.ToArrayAsync() )
         );
 
-        app.MapGet( "/chat/{id}", async ( Guid id, MessageDb context ) =>
-            await context.Chats.FirstOrDefaultAsync( c => c.Id == id ) is Chat chat
-            ? Results.Ok( chat )
-            : Results.NotFound( id ) 
-        );
+        _ = app.MapGet( "/chat/{id}", async ( Guid id, MessageDb context ) =>
+        {
+            var chat = await context.Chats
+                .Where( c => c.Id == id )
+                .Select( c => new { id = c.Id, name = c.Name, chats = c.Users.Select( c => c.Id ).ToArray() } )
+                .FirstOrDefaultAsync();
+
+            return chat == null 
+                ? Results.NotFound() 
+                : Results.Ok( chat );
+        } );
 
         app.MapPost( "/chat", async ( [FromBody] Chat body, MessageDb context ) =>
         {
@@ -28,7 +34,6 @@
             if( chat == null )
                 return Results.NotFound( id );
 
-            // TODO: Переделать на массив
             var users = await context.Users.Where( u => userIds.Contains(u.Id) ).ToArrayAsync();
 
             // TODO: Попробовать LanguageEx 
