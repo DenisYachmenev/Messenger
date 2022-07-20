@@ -14,7 +14,7 @@ public class ChatController : ControllerBase
         Ok( await _context.Chats.ToArrayAsync() );
 
     [HttpGet]
-    [Route( "/chat/{id}" )]
+    [Route( "{id}" )]
     public async Task<IActionResult> GetChat( Guid id )
     {
         var chat = await _context.Chats
@@ -38,7 +38,7 @@ public class ChatController : ControllerBase
     }
 
     [HttpPut]
-    [Route( "/chat/{id}" )]
+    [Route( "{id}" )]
     public async Task<IActionResult> Put( Guid id, [FromBody] Guid[] userIds )
     {
         var chat = await _context.Chats.FirstOrDefaultAsync( c => c.Id == id );

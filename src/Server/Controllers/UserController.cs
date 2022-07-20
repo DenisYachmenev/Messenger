@@ -14,12 +14,12 @@ public class UserController : ControllerBase
         Ok( await _context.Users.ToArrayAsync() );
 
     [HttpGet]
-    [Route( "name/{name}/email/{email}" )]
-    public async Task<IActionResult> GetUser( string name, string email )
+    [Route( "email/{email}" )]
+    public async Task<IActionResult> GetUser( string email )
     {
         var user = await _context.Users
-            .Where( u => u.Name == name && u.Email == email )
-            .Select( u => new { id = u.Id, name = u.Name, chats = u.Chats.Select( c => c.Id ).ToArray() } )
+            .Where( u => u.Email == email )
+            .Select( u => new { id = u.Id, name = u.Name, chats = u.Chats.Select( c => new { id = c.Id, name = c.Name } ).ToArray() } )
             .FirstOrDefaultAsync();
 
         return user == null
