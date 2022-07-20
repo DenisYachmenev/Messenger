@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messager", "src\Services\Messager\Messager.csproj", "{0FF074E1-A3D9-49D0-AE52-7DDD6455201F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger", "src\Services\Messenger\Messenger.csproj", "{0FF074E1-A3D9-49D0-AE52-7DDD6455201F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsClient", "src\Clients\WinFormsClient\WinFormsClient.csproj", "{68B8A854-BC60-42CE-8FBB-8C0C49AAEF70}"
 EndProject
