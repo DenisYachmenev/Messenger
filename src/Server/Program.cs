@@ -1,15 +1,21 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MessengerContext>( options =>
 {
     options.UseSqlite( builder.Configuration.GetConnectionString( "Sqlite" ) );
 } );
 
+// TODO: Перенести в расширение
 builder.Services
-  .AddSingleton<IChatNotifier, ChatNotifier>( sp =>
-  {
-      return new ChatNotifier() { Address = builder.Configuration[ "ChatNotifier:Address" ] };
-  } );
+    .AddSingleton<IRabbitMQPersisterConnection>( _ =>
+    {
+        var factory = new ConnectionFactory()
+        {
+            Uri = new Uri( builder.Configuration[ "RabbitMQPersisterConnection:Uri" ] )
+        };
+
+        return new RabbitMQPersisterConnection( factory );
+    } ).AddSingleton<IChatNotifier, ChatNotifier>();
 
 builder.Services.AddControllers();
 //builder.Services.AddEndpointsApiExplorer();
