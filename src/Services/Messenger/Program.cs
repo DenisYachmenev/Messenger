@@ -5,25 +5,21 @@ builder.Services.AddDbContext<MessengerContext>( options =>
     options.UseSqlite( builder.Configuration.GetConnectionString( "Sqlite" ) );
 } );
 
-// TODO: Перенести в расширение
-builder.Services
-    .AddSingleton<IRabbitMQPersisterConnection>( _ =>
-    {
-        var factory = new ConnectionFactory()
-        {
-            Uri = new Uri( builder.Configuration[ "RabbitMQPersisterConnection:Uri" ] )
-        };
+builder.Services.AddControllers().AddJsonOptions( x =>
+                x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles );
 
-        return new RabbitMQPersisterConnection( factory );
-    } ).AddSingleton<IChatNotifier, ChatNotifier>();
-
+builder.Services.AddNotifier( builder.Configuration );
 builder.Services.AddControllers();
 //builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 if( app.Environment.IsDevelopment() )
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<MessengerContext>();
     db.Database.EnsureCreated();
