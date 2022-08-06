@@ -5,22 +5,19 @@ namespace WinFormsClient;
 
 internal partial class Messenger : Form
 {
-   /* private readonly User _user;
+    private readonly UserApi _userApi;
 
-    private readonly IMessengerClient _client;
-
-    public Messenger( IMessengerClient client, User user)
+    public Messenger( UserApi userApi )
     {
         InitializeComponent();
 
-        _client = client;
-        _user = user;
+        _userApi = userApi;
         // TODO: разораться с биндингом
-        listChats.DataSource = _user.Chats;
+        listChats.DataSource = userApi.GetChats();
         listChats.DisplayMember = nameof( Chat.Name );
         listChats.SelectedIndex = -1;
         listChats.SelectedIndexChanged += new EventHandler( listChats_SelectedIndexChanged );
-    }*/
+    }
 
     private void btnCreateChat_Click( object sender, EventArgs e )
     {
@@ -36,8 +33,10 @@ internal partial class Messenger : Form
     {
         var chat = (Chat)listChats.SelectedItem;
 
-       // listMessages.DataSource = _client.GetMessages( chat.Id );
-        listChats.DisplayMember = nameof( Proxy.Models.Message.Text );
-        //listChats.SelectedIndex = -1;
+        var chatApi = _userApi.GetChat( chat.Id );
+
+        listMessages.DataSource = chatApi.GetMessages( );
+        listMessages.DisplayMember = nameof( Proxy.Models.Message.Text );
+        listMessages.SelectedIndex = -1;
     }
 }

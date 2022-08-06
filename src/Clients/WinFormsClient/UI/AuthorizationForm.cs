@@ -14,26 +14,26 @@ namespace WinFormsClient
 {
     internal partial class AuthorizationForm : Form
     {
-        /*private readonly IMessengerClient _client;
+        private readonly MessengerClient _client;
 
-        public AuthorizationForm(IMessengerClient client)
+        public AuthorizationForm(MessengerClient client)
         {
             InitializeComponent();
 
             _client = client;
-        }*/
+        }
 
         private void btnSignIn_Click( object sender, EventArgs e )
         {
-         /*   User? user = _client.GetUserByEmailOrDefault( txtEmail.Text );
+            var userApi = _client.GetUser( txtEmail.Text );
 
             // TODO: Добавить регистрацию если пользователь не найден
 
             this.Hide();
 
-            var messager = new Messenger( _client, user );
+            var messager = new Messenger( userApi );
             messager.Closed += ( s, args ) => this.Close();
-            messager.Show();*/
+            messager.Show();
         }
     }
 }

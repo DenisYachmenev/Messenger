@@ -19,19 +19,23 @@ static class Program
 
         var client = new MessengerClient( httpClinet );
 
-        var user = client.GetUserByEmail( "email" );
+        // client.AddUser();
 
-        Guid[] guids = user.GetChats();
+        //var userApi = client.GetUser( "tester@yandex.ru" );
 
-        ChatClient chat = user.GetChat( guids[ 0 ] );
+        //var chatGuids = userApi.GetChats();
 
-        chat.GetMessages();
+        //var chatApi = userApi.GetChat( chatGuids[0] );
 
-        chat.AddMessage("test");
+        ////userApi.AddChat();
+
+        ////var messageApi = chatApi.GetMessages();
+
+        //chatApi.AddMessage( "Hello!" );
 
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        //Application.Run(new AuthorizationForm( client ) );
+        Application.Run(new AuthorizationForm( client ) );
     }
 }

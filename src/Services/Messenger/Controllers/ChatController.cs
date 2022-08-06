@@ -10,7 +10,7 @@ public class ChatController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType( typeof( Message[] ), StatusCodes.Status200OK )]
+    [ProducesResponseType( typeof( Chat[] ), StatusCodes.Status200OK )]
     public async Task<ActionResult> GetChats() =>
         Ok( await _context.Chats.ToArrayAsync() );
 
@@ -31,7 +31,7 @@ public class ChatController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType( StatusCodes.Status201Created )]
-    public async Task<ActionResult> Post( [FromBody] Chat body )
+    public async Task<ActionResult> AddChat( [FromBody] Chat body )
     {
         var chat = await _context.Chats.AddAsync( body );
 
@@ -45,7 +45,7 @@ public class ChatController : ControllerBase
     [Route( "{id}" )]
     [ProducesResponseType( StatusCodes.Status204NoContent )]
     [ProducesResponseType( StatusCodes.Status404NotFound )]
-    public async Task<ActionResult> Put( Guid id, [FromBody] Guid[] userIds )
+    public async Task<ActionResult> UpdateChat( Guid id, [FromBody] Guid[] userIds )
     {
         var chat = await _context.Chats.FirstOrDefaultAsync( c => c.Id == id );
 

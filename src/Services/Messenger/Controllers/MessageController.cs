@@ -16,8 +16,8 @@ public class MessageController : ControllerBase
     [ProducesResponseType( typeof( Message[] ), StatusCodes.Status200OK )]
     public async Task<ActionResult> Get( Guid chatId ) => 
         Ok( await _context.Messages.Where( m => m.ChatId == chatId ).ToArrayAsync() );
-    
 
+    // TODO: А может переделать на userId/{userId}/chatId/{chatId} а в теле тест передавать?
     [HttpPost]
     [ProducesResponseType( StatusCodes.Status201Created )]
     public async Task<ActionResult> Post( [FromBody] Message body )
