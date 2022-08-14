@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using WinFormsClient.Proxy;
 using WinFormsClient.Proxy.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace WinFormsClient;
 
@@ -12,12 +13,17 @@ static class Program
     [STAThread]
     static void Main()
     {
-        var httpClinet = new HttpClient()
+        using var httpClient = new HttpClient()
         {
-            BaseAddress = new Uri("http://localhost:5157")
+            BaseAddress = new Uri( GetSettings().ServiceUri )
         };
 
-        var client = new MessengerClient( httpClinet );
+        var client = new MessengerClient( httpClient );
+
+        // To customize application configuration such as set high DPI settings or default font,
+        // see https://aka.ms/applicationconfiguration.
+        ApplicationConfiguration.Initialize();
+        Application.Run( new AuthorizationForm( client ) );
 
         // client.AddUser();
 
@@ -32,10 +38,10 @@ static class Program
         ////var messageApi = chatApi.GetMessages();
 
         //chatApi.AddMessage( "Hello!" );
-
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
-        ApplicationConfiguration.Initialize();
-        Application.Run(new AuthorizationForm( client ) );
     }
+
+    private static Settings GetSettings() => new ConfigurationBuilder()
+             .AddJsonFile( "appsettings.json" )
+             .Build()
+             .Get<Settings>();
 }
