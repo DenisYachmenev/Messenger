@@ -10,17 +10,20 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUsers() =>
+    [ProducesResponseType( typeof( User[] ), StatusCodes.Status200OK )]
+    public async Task<ActionResult> GetUsers() =>
         Ok( await _context.Users.ToArrayAsync() );
 
     [HttpGet]
     [Route( "email/{email}" )]
-    public async Task<IActionResult> GetUser( string email )
+    [ProducesResponseType( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( typeof( User ), StatusCodes.Status200OK )]
+    public async Task<ActionResult> GetUser( string email )
     {
+        // TODO: Валидация. если не проходит то BadRequest
         var user = await _context.Users
-            .Where( u => u.Email == email )
-            .Select( u => new { id = u.Id, name = u.Name, chats = u.Chats.Select( c => new { id = c.Id, name = c.Name } ).ToArray() } )
-            .FirstOrDefaultAsync();
+            .Include(u => u.Chats )
+            .FirstOrDefaultAsync( u => u.Email == email );
 
         return user == null
             ? NotFound()
@@ -28,7 +31,8 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post( [FromBody] User body )
+    [ProducesResponseType( StatusCodes.Status201Created )]
+    public async Task<ActionResult> Post( [FromBody] User body )
     {
         var user = await _context.Users.AddAsync( body );
 

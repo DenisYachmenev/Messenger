@@ -1,6 +1,6 @@
 ﻿namespace WinFormsClient;
 
-partial class Messager
+partial class Messenger
 {
     /// <summary>
     ///  Required designer variable.

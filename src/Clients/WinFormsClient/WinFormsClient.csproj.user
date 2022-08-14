@@ -5,7 +5,7 @@
     <Compile Update="UI\AuthorizationForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="UI\Messager.cs">
+    <Compile Update="UI\Messenger.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="UI\RegistrationForm.cs">

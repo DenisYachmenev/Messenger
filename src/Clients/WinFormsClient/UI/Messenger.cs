@@ -1,18 +1,19 @@
-﻿using WinFormsClient.Proxy.Models;
+﻿using WinFormsClient.Proxy;
+using WinFormsClient.Proxy.Models;
 
 namespace WinFormsClient;
 
-internal partial class Messager : System.Windows.Forms.Form
+internal partial class Messenger : Form
 {
-    private User _user;
+    private readonly UserApi _userApi;
 
-    public Messager(User user)
+    public Messenger( UserApi userApi )
     {
         InitializeComponent();
 
-        _user = user;
+        _userApi = userApi;
         // TODO: разораться с биндингом
-        listChats.DataSource = _user.Chats;
+        listChats.DataSource = userApi.GetChats();
         listChats.DisplayMember = nameof( Chat.Name );
         listChats.SelectedIndex = -1;
         listChats.SelectedIndexChanged += new EventHandler( listChats_SelectedIndexChanged );
@@ -32,6 +33,10 @@ internal partial class Messager : System.Windows.Forms.Form
     {
         var chat = (Chat)listChats.SelectedItem;
 
-        MessageBox.Show( $"{chat.Id} - {chat.Name}" );
+        var chatApi = _userApi.GetChat( chat.Id );
+
+        listMessages.DataSource = chatApi.GetMessages( );
+        listMessages.DisplayMember = nameof( Proxy.Models.Message.Text );
+        listMessages.SelectedIndex = -1;
     }
 }
